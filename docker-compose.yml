@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  qa-bot:
+    build: .
+    container_name: qa-teacher-bot
+    restart: unless-stopped
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
