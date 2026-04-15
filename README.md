@@ -1,4 +1,4 @@
-# 🤖 QA Bot — Генератор ответов на типовые вопросы
+# 🤖 QA Teacher Bot — Генератор ответов на типовые вопросы преподавателя
 
 Telegram-бот, который автоматически отвечает на частые вопросы студентов в чате группы. Использует **TF-IDF + косинусное сходство + лемматизацию** для понимания перефразированных вопросов без словаря синонимов.
 
@@ -8,10 +8,13 @@ Telegram-бот, который автоматически отвечает на
 
 ```
 qa-bot/
-├── bot.py                 # Основной код бота (движок + Telegram-обработчики)
-├── eval.py                # Скрипт оценки качества (33 теста, accuracy/precision/recall)
+├── bot.py                 # Основной код бота (Telegram-обработчики + выбор движка)
+├── engines.py             # Три движка: TfidfEngine, TfidfSynonymEngine, AdvancedTfidfEngine
+├── nlp_utils.py           # Лемматизация, синонимы, загрузка базы знаний
+├── eval_compare.py        # Сравнение движков (33 теста, accuracy/precision/recall/F1)
 ├── data/
 │   └── qa_base.json       # База знаний: 40 пар «вопрос — ответ» по 8 категориям
+├── results/               # PNG-графики и JSON-отчёт после eval_compare.py
 ├── requirements.txt       # Зависимости Python
 ├── Dockerfile             # Контейнеризация
 ├── docker-compose.yml     # Деплой одной командой
@@ -96,8 +99,17 @@ git clone <repo-url> && cd qa-bot
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 export BOT_TOKEN="ваш_токен"
+export ENGINE_TYPE="tfidf_synonyms"  # опционально, это дефолт
 python bot.py
 ```
+
+#### Доступные движки (`ENGINE_TYPE`)
+
+| Значение           | Описание                                              |
+|--------------------|-------------------------------------------------------|
+| `tfidf`            | Базовый TF-IDF + лемматизация                        |
+| `tfidf_synonyms`   | **Дефолт.** Добавляет замену синонимов и сленга      |
+| `embeddings`       | Char n-grams (3–5) + word bigrams, два векторизатора  |
 
 ### 3. Запуск через Docker
 
@@ -107,13 +119,13 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-### 4. Проверка качества
+### 4. Сравнение движков
 
 ```bash
-python eval.py
+python eval_compare.py
 ```
 
-Выведет accuracy, precision, recall на 33 тестовых вопросах (включая мусорные).
+Выведет accuracy, precision, recall, F1 для всех трёх движков на 33 тестах. Сохранит графики в `results/`.
 
 ---
 
@@ -187,4 +199,7 @@ python eval.py
 
 ---
 
+## Авторы
 
+Научная работа по теме «Генератор ответов на типовые вопросы преподавателя».  
+Курс: Математические основы ИИ.
