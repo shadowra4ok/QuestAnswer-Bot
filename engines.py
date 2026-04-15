@@ -2,7 +2,7 @@
 Три движка поиска ответов для сравнительного анализа:
   1. TfidfEngine        — базовый TF-IDF + лемматизация
   2. TfidfSynonymEngine — TF-IDF + лемматизация + словарь синонимов
-  3. EmbeddingEngine    — sentence-transformers (нейросетевые эмбеддинги)
+  3. AdvancedTfidfEngine — char n-grams (3-5) + word bigrams + синонимы
 """
 
 import numpy as np
