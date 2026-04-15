@@ -68,9 +68,7 @@ SYNONYMS = {
     "запись": "видео",
     "литература": "книга",
     "учебник": "книга",
-    "разрешить": "разрешать",
     "принимать": "принять",
-    "рукописный": "рука",
 }
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "qa_base.json")
@@ -107,5 +105,13 @@ def lemmatize(text: str, use_synonyms: bool = False) -> str:
 
 def load_knowledge_base(path: str = DATA_PATH) -> dict:
     """Загружает JSON-базу вопросов и ответов."""
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        raise RuntimeError(f"База знаний не найдена: {path}")
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Ошибка формата базы знаний ({path}): {e}")
+    if "questions" not in data or not isinstance(data["questions"], list):
+        raise RuntimeError(f"Неверная структура базы знаний: отсутствует список 'questions'")
+    return data
